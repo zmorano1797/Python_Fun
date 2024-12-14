@@ -86,7 +86,7 @@ def main():
             gens = gens + 1
             pygame.display.update()
 
-        time.sleep(0.05)
+        time.sleep(0.001)
 
 if __name__ == '__main__':
     main()

@@ -9,8 +9,10 @@ COLOR_GRID = (40,40,40)
 COLOR_DIE_NEXT = (170,170,170)
 COLOR_ALIVE_NEXT = (255,255,255)
 
-size1grid = simpledialog.askinteger("Length:", "How many Pixels Long?")
-size2grid = simpledialog.askinteger("Width:", "How many Pixels Wide?")
+sl = simpledialog.askinteger("Length:", "How many Pixels Long?")
+sw = simpledialog.askinteger("Width:", "How many Pixels Wide?")
+grid = simpledialog.askinteger("Grid Size:", "How fine of a grid would you like?")
+gs = int(grid)
 
 def update(screen, cells, size, with_progress=False):
     updated_cells = np.zeros((cells.shape[0],cells.shape[1]))
@@ -38,14 +40,16 @@ def update(screen, cells, size, with_progress=False):
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((size1grid, size2grid))
 
-    size1 = int(size2grid/10)
-    size2 = int(size1grid/10)
+    screen = pygame.display.set_mode((sl, sw))
+
+    size1 = int(sw/grid)
+    size2 = int(sl/grid)
+    gens = 0
 
     cells = np.zeros((size1, size2))
     screen.fill((COLOR_GRID))
-    update(screen, cells, 10)
+    update(screen, cells, grid)
 
     pygame.display.flip()
     pygame.display.update()
@@ -54,27 +58,35 @@ def main():
 
     while True:
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    main()
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     running = not running
-                    update(screen, cells, 10)
+                    update(screen, cells, grid)
                     pygame.display.update()
+                if event.key == pygame.K_g:
+                    print(gens)
+                else:
+                    pass
             if pygame.mouse.get_pressed()[0]:
                 pos = pygame.mouse.get_pos()
-                cells[pos[1] // 10, pos[0] // 10] = 1
-                update(screen, cells, 10)
+                cells[pos[1] // gs, pos[0] // gs] = 1
+                update(screen, cells, grid)
                 pygame.display.update()
 
         screen.fill(COLOR_GRID)
 
         if running:
-            cells = update(screen, cells, 10, with_progress=True)
+            cells = update(screen, cells, grid, with_progress=True)
+            gens = gens + 1
             pygame.display.update()
 
-        time.sleep(0.001)
+        time.sleep(0.05)
 
 if __name__ == '__main__':
     main()
